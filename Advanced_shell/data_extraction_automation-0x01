@@ -3,10 +3,11 @@
 name=$(jq -r '.name' data.json)
 name="${name^}"
 type=$(jq -r '.types[0].type.name' data.json)
-type="${type^}"
+type="$(echo "$type" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')"
 weight=$(jq -r '.weight' data.json)
 height=$(jq -r '.height' data.json)
 
 formatted_weight=$(echo " $weight / 10" | bc)
-formatted_height=$(printf "%.1f" "$(echo "$height / 10" | bc -l)")
+formatted_height=$(echo " $height / 10" | bc -l | sed 's/\(\.[0-9]*[1-9]\)0*$/\1/; s/\.0$//')
+formatted_height=$(echo "$formatted_height" | sed 's/^\./0./')
 echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
