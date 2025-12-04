@@ -1,0 +1,31 @@
+#!/bin/bash
+
+pokemon_list=("bulbasaur" "ivysaur" "chameleon" "charmander" "venusaur")
+error_file="errors.txt" > "$error_file"
+
+fetch_pokemon()  {
+	pokemon="$1"
+	filename="${pokemon}.json"
+
+	echo "Fetching $pokemon..."
+	response=$(curl -s -w "%{http_code}" "https://pokeapi.co/api/v2/pokemon/$pokemon")
+	http_code="${response: -3}"
+	body="${response:: -3}"
+
+	if [ "${http_code}" -eq 200 ]; then
+		echo "$body" | jq '.' > "$filename"
+		echo "saved to $filename successfully"
+	else
+		echo "Failed to fetch $pokemon (HTTP $http_code)" >> "$error_file"
+	fi
+}
+
+for pokemon in "${pokemon_list[@]}"; do
+	fetch_pokemon "$pokemon" &
+done
+
+#---------wait for all parrallel jobs to finish____#
+wait
+
+echo "Complete"
+echo "check the pokemon name with extension .json and errors.txt for errors"
