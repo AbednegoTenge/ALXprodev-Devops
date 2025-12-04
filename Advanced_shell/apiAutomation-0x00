@@ -1,0 +1,14 @@
+#!/bin/bash
+
+URL="https://pokeapi.co/api/v2/pokemon/pikachu"
+
+http_code=$(curl -s -o raw.json -w "%{http_code}" "$URL")
+
+if [ "$http_code" -eq 200 ]; then
+	jq '.' raw.json > data.json
+	rm raw.json
+	echo "Request successful. Data saved to data.json"
+else
+	echo "Request failed with status code: $http_code" >> errors.txt
+	rm -f data.json
+fi
