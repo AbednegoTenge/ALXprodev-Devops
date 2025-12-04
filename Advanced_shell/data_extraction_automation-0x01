@@ -1,0 +1,6 @@
+#!/bin/bash
+
+type=$(jq -r '.types[0].type.name' data.json)
+weight=$(jq -r '.weight' data.json)
+height=$(jq -r '.height' data.json)
+echo "Pikachu is of type $type, weighs ${weight}kg, and is ${height}m tall"
