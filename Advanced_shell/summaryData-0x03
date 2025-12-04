@@ -14,7 +14,7 @@ for file in "${files[@]}"; do
     # Pretty formatting
     formatted_height=$(awk "BEGIN {h=$height/10; printf \"%g\", h}")
     formatted_weight=$(awk "BEGIN {w=$weight/10; printf \"%g\", w}")
-
+    #sed
     printf "%s,%s,%s\n" "$name" "$formatted_height" "$formatted_weight" >> "$output_file"
 done
 
