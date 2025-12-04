@@ -9,4 +9,4 @@ height=$(jq -r '.height' data.json)
 
 formatted_weight=$(echo " $weight / 10" | bc)
 formatted_height=$(printf "%.1f" "$(echo "$height / 10" | bc -l)")
-echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall"
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
