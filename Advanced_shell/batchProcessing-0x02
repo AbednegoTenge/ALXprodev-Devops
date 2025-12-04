@@ -1,9 +1,9 @@
 #!/bin/bash
 
-pokemon_list=("Bulbasaur" "Ivysaur" "Venusaur" "Charmander" "Charmeleon")
+pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
 
 for pokemon in "${pokemon_list[@]}"; do
-	filename="$(echo "$pokemon" | tr '[:upper:]' '[:lower:]').json"
+	filename="$(echo "$pokemon").json"
 	echo "Fetching data for ${pokemon,,}..."
 	response=$(curl -s -w "%{http_code}" "https://pokeapi.co/api/v2/pokemon/${pokemon,,}")
 	http_code="${response: -3}"
