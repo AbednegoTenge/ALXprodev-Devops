@@ -1,0 +1,20 @@
+#!/bin/bash
+
+pokemon_list=("Bulbasaur" "Ivysaur" "Venusaur" "Charmander" "Charmeleon")
+
+for pokemon in "${pokemon_list[@]}"; do
+	filename="$(echo "$pokemon" | tr '[:upper:]' '[:lower:]').json"
+	echo "Fetching data for ${pokemon,,}..."
+	response=$(curl -s -w "%{http_code}" "https://pokeapi.co/api/v2/pokemon/${pokemon,,}")
+	http_code="${response: -3}"
+	body="${response:: -3}"
+
+	if [ "$http_code" -eq 200 ]; then
+		echo "$body" | jq '.' > "$filename"
+		echo "saved data to pokemon_data/$filename"
+	else
+		echo "Failed to fetch $pokemon (HTTP $http_code)" >> errors.txt
+	fi
+	
+	sleep 3
+done
