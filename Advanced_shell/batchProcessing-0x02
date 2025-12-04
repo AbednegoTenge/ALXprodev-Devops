@@ -1,20 +1,31 @@
 #!/bin/bash
 
 pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+error_file="errors.txt" > 'errors.txt'
 
 for pokemon in "${pokemon_list[@]}"; do
 	filename="$(echo "$pokemon").json"
 	echo "Fetching data for ${pokemon,,}..."
-	response=$(curl -s -w "%{http_code}" "https://pokeapi.co/api/v2/pokemon/${pokemon,,}")
-	http_code="${response: -3}"
-	body="${response:: -3}"
-
-	if [ "$http_code" -eq 200 ]; then
-		echo "$body" | jq '.' > "$filename"
-		echo "saved data to pokemon_data/$filename"
-	else
-		echo "Failed to fetch $pokemon (HTTP $http_code)" >> errors.txt
+	max_attempt=3
+	attempt=1
+	success=false
+	while [ "$attempt" -le "$max_attempt" ]; do
+		response=$(curl -s -w "%{http_code}" "https://pokeapi.co/api/v2/pokemon/${pokemon,,}")
+		http_code="${response: -3}"
+		body="${response:: -3}"
+		if [ "$http_code" -eq 200 ]; then
+			echo "$body" | jq '.' > "$filename"
+			echo "saved data to pokemon_data/$filename"
+			success=true
+			break
+		else
+			echo "Request failed (HTTP $http_code)."
+			attempt=$((attempt + 1))
+			sleep 2
+		fi
+	done
+	if [ "$success" = false ]; then
+		echo "Failed to fetch $pokemon after $max_attempt attempts" >> "$error_file"
 	fi
-	
-	sleep 3
+	sleep 2
 done
