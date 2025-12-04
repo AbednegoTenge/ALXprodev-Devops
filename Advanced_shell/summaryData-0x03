@@ -1,0 +1,25 @@
+#!/bin/bash
+
+files=("bulbasaur.json" "ivysaur.json" "charmander.json" "venusaur.json" "charmeleon.json")
+output_file="pokemon.csv"
+printf "Name, Height (m), Weight (kg)\n" > "$output_file"
+
+for file in "${files[@]}"; do
+    name=$(jq -r '.name' "$file")
+    name="${name^}"
+
+    height=$(jq -r '.height' "$file")
+    weight=$(jq -r '.weight' "$file")
+
+    # Pretty formatting
+    formatted_height=$(awk "BEGIN {h=$height/10; printf \"%g\", h}")
+    formatted_weight=$(awk "BEGIN {w=$weight/10; printf \"%g\", w}")
+
+    printf "%s,%s,%s\n" "$name" "$formatted_height" "$formatted_weight" >> "$output_file"
+done
+
+echo "CSV Report generated at: $output_file"
+average_height=$(awk -F ',' 'NR>1 {sum+=$2; n++} END {if (NR>0) print sum/n}' "$output_file")
+average_weight=$(awk -F ',' 'NR>1 {sum+=$3; n++} END {if (NR>0) print sum/n}' "$output_file")
+echo "Average Height: ${average_height} m"
+echo "Average Weight: ${average_weight} kg"
